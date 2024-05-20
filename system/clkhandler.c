@@ -15,19 +15,27 @@
 /* clkhandler.c - clkhandler */
 
 #include <xinu.h>
-
+#include <usb_cdc_conf.h>
 /*-----------------------------------------------------------------------
  * clkhandler - high level clock interrupt handler
  *-----------------------------------------------------------------------
  */
 
 //void __attribute__ ((naked)) clkhandler()
- 
+
+
+extern	void	ttyhandler(uint32, char c, int tipo);
 void TIM2_Handler()
 {   
 
 		/* Increment 1000ms counter */
 	    TIM2->SR &= ~(1U << 0);
+        if(usb_available()){
+        	//kputc(usb_getc());
+        	uint32 q = disable();
+        	ttyhandler(1,usb_getc(),0);
+        	restore(q);
+        }
 
 		count1000++;
 

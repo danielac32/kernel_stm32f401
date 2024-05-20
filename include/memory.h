@@ -39,3 +39,4 @@ extern	unsigned int	_edata;			/* End of data segment		*/
 extern	unsigned int	_sbss;			/* Start of bss segment		*/
 extern	unsigned int	_ebss;			/* End of bss segment		*/
 extern	unsigned int	end;			/* End of program		*/
+uint32 heap_free(void);

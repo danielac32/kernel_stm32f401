@@ -72,3 +72,4 @@ typedef struct w25qxxx_drv4K
 	unsigned char (*read) (uint8_t *rxbuf, uint32_t sector, uint32_t count);
 	unsigned char (*write) (const uint8_t *txbuf, uint32_t sector, uint32_t count);
 } w25qxxx_drv_t4K;
+extern const w25qxxx_drv_t w25qxxx_drv;

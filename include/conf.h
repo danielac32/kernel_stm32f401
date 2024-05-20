@@ -19,6 +19,12 @@ struct	dentry	{
 	void    *dvcsr;
 	void    (*dvintr)(void);
 	byte    dvirq;
+		//funciones solo para led
+	int32 (*dvset) (struct dentry *,bool);
+	int32 (*dvtoggle) (struct dentry *);
+	//funciones para escribir en la flash
+	devcall (*dvreadsector) (struct dentry *, void *, uint32 , uint32);
+	devcall (*dvwritesector) (struct dentry *, void *, uint32 , uint32);
 };
 
 extern	struct	dentry	devtab[]; /* one entry per device */
@@ -28,7 +34,8 @@ extern	struct	dentry	devtab[]; /* one entry per device */
 #define CONSOLE              0	/* type tty      */
 #define NULLDEV              1	/* type null     */
 #define NAMESPACE            2	/* type nam      */
-
+#define LED                  3	/* type nam      */
+#define FLASHSPI             4	/* type nam      */
 /* Control block sizes */
 
 #define	Nnull	1
@@ -36,16 +43,10 @@ extern	struct	dentry	devtab[]; /* one entry per device */
 #define	Nnam	1
 #define	Nspi	1
 
-#define NDEVS 3
+#define NDEVS 5
 
 
 /* Configuration and Size Constants */
 
 #define	NPROC	     10		/* number of user processes		*/
 #define	NSEM	     10		/* number of semaphores			*/
-#define	IRQBASE	     32		/* base ivec for IRQ0			*/
-#define	IRQ_TIMER    IRQ_HW5	/* timer IRQ is wired to hardware 5	*/
-#define	IRQ_ATH_MISC IRQ_HW4	/* Misc. IRQ is wired to hardware 4	*/
-#define CLKFREQ      200000000	/* 200 MHz clock			*/
-
-#define	LF_DISK_DEV	RAM0

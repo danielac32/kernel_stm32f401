@@ -9,6 +9,7 @@ extern shellcmd xsh_dump(int nargs, char *args[]);
 /* in file xsh_cat.c */
 //extern	shellcmd  xsh_cat	(int32, char *[]);
 
+extern	shellcmd  xsh_blink	(int32, char *[]);
 /* in file xsh_clear.c */
 extern	shellcmd  xsh_clear	(int32, char *[]);
 

@@ -18,7 +18,8 @@ const	struct	cmdent	cmdtab[] = {
 	{"memdump",	FALSE,	xsh_memdump},
 	{"memstat",	TRUE,	xsh_memstat}, /* Make built-in */
 	{"ps",		FALSE,	xsh_ps},
-	{"?",		FALSE,	xsh_help}
+	{"?",		FALSE,	xsh_help},
+	{"blink",   FALSE,  xsh_blink}
 
 };
 
@@ -95,13 +96,14 @@ did32	dev=CONSOLE;
   
 	struct dentry	*devptr;	
 	struct	ttycblk	*typtr;	
+	struct	procent	*prptr;
 	while (TRUE) {
 
 		/* Display prompt */
 		fprintf(dev, SHELL_PROMPT);
 
          
-        
+       
 		len = read(dev, buf, sizeof(buf));
 
 
@@ -119,7 +121,6 @@ did32	dev=CONSOLE;
 
 		buf[len] = SH_NEWLINE;	/* terminate line */
 		/* Parse input line and divide into tokens */
-
 		ntok = lexan(buf, len, tokbuf, &tlen, tok, toktyp);
 
 		/* Handle parsing error */
@@ -276,16 +277,24 @@ did32	dev=CONSOLE;
 
 		child = create(cmdtab[j].cfunc,
 			SHELL_CMDSTK, SHELL_CMDPRIO,
-			cmdtab[j].cname, 2, ntok, &tmparg);
+			cmdtab[j].cname, 0);
 
 		/* If creation or argument copy fails, report error */
 
-		if ((child == SYSERR) ||
-		    (addargs(child, ntok, tok, tlen, tokbuf, &tmparg)
-							== SYSERR) ) {
+		if (child == SYSERR){
 			fprintf(dev, SHELL_CREATMSG);
 			continue;
 		}
+
+		prptr = &proctab[child];
+		context_t *ctx = (context_t*)prptr->prstkptr;
+		ctx->r0 = (uint32) ntok;
+        ctx->r1 = (uint32)&args[0];
+		//if ((*cmdtab[j].cfunc)(ntok, args)
+		//if ((child == SYSERR) || (addargs(child, ntok, tok, tlen, tokbuf, &tmparg) == SYSERR) ) {
+		//	fprintf(dev, SHELL_CREATMSG);
+		//	continue;
+		//}
 
 		/* Set stdinput and stdoutput in child to redirect I/O */
 

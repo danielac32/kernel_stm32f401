@@ -1,6 +1,6 @@
 #include <interrupt.h>
 #include <usb_cdc_conf.h>
-
+#include <gpio.h>
 /* Device descriptor */
 static const struct usb_device_descriptor device_desc = {
     .bLength            = sizeof(struct usb_device_descriptor),
@@ -272,16 +272,18 @@ static void cdc_loopback(usbd_device *dev, uint8_t event, uint8_t ep) {
    
     uint8_t lastRxError;
 
-    #if 1
+    #if 0
     
     len=usbd_ep_read(dev, CDC_RXD_EP, &fifo, CDC_DATA_SZ);
     
-    if(len>0)kprintf("interrupt: %s\n",fifo);
+    if(len>0){
+        hw_toggle_pin(GPIOx(GPIO_C),13);
+    }//kprintf("interrupt: %s\n",fifo);
 
     //uint32 q=disable(); 
-    for (int i = 0; i < len; ++i){
+    //for (int i = 0; i < len; ++i){
         //ttyhandler (1, fifo[i], 0);
-    }
+    //}
     //restore(q); 
     
     #else
@@ -303,10 +305,11 @@ static void cdc_loopback(usbd_device *dev, uint8_t event, uint8_t ep) {
             //memcpy(UART_CDC_RxBuf,&fifo[0],len);
         }
         UART_CDC_LastRxError = lastRxError;
+        //hw_toggle_pin(GPIOx(GPIO_C),13);
     }
 
     
-
+    
     restore(q); 
     #endif
     
@@ -356,13 +359,15 @@ void cdc_init_usbd(void) {
 extern  syscall yield(void);
 void usbTask(){
 //    kprintf("enable usb task\n");
-    NVIC_DisableIRQ(OTG_FS_IRQn);
-    NVIC_ClearPendingIRQ(OTG_FS_IRQn);
+    //NVIC_DisableIRQ(OTG_FS_IRQn);
+    //NVIC_ClearPendingIRQ(OTG_FS_IRQn);
     while(1){
         usbd_poll(&udev);
-        yield();
+        //yield();
     }
 }
+
+
 void OTG_FS_Handler(void) {
    asm volatile("cpsid i");
    usbd_poll(&udev);

@@ -1,5 +1,89 @@
 #include <xinu.h>
 
+
+syscall	readSector(
+	  did32		descrp,		/* Descriptor for device	*/
+	  char		*buffer,	/* Address of buffer		*/
+	  uint32	sector,
+	  uint32	count		/* Length of buffer		*/
+	)
+{
+	intmask		mask;		/* Saved interrupt mask		*/
+	struct dentry	*devptr;	/* Entry in device switch table	*/
+	int32		retval;		/* Value to return to caller	*/
+	
+	mask = disable();
+	if (isbaddev(descrp)) {
+		restore(mask);
+		return SYSERR;
+	}
+	devptr = (struct dentry *) &devtab[descrp];
+	retval = (*devptr->dvreadsector) (devptr, buffer, sector,count);
+	restore(mask);
+	return retval;
+}
+ 
+syscall	writeSector(
+	  did32		descrp,		/* Descriptor for device	*/
+	  char		*buffer,	/* Address of buffer		*/
+	  uint32	sector,
+	  uint32	count		/* Length of buffer		*/
+	)
+{
+	intmask		mask;		/* Saved interrupt mask		*/
+	struct dentry	*devptr;	/* Entry in device switch table	*/
+	int32		retval;		/* Value to return to caller	*/
+
+	mask = disable();
+	if (isbaddev(descrp)) {
+		restore(mask);
+		return SYSERR;
+	}
+	devptr = (struct dentry *) &devtab[descrp];
+	retval = (*devptr->dvwritesector) (devptr, buffer, sector,count);
+	restore(mask);
+	return retval;
+}
+
+syscall	set(
+	  did32		descrp,		/* Descriptor for device	*/
+	  char		ch		/* Character to send		*/
+	)
+{
+	intmask		mask;		/* Saved interrupt mask		*/
+	struct dentry	*devptr;	/* Entry in device switch table	*/
+	int32		retval;		/* Value to return to caller	*/
+
+	mask = disable();
+	if (isbaddev(descrp)) {
+		restore(mask);
+		return SYSERR;
+	}
+	devptr = (struct dentry *) &devtab[descrp];
+	retval = (*devptr->dvset) (devptr, ch);
+	restore(mask);
+	return retval;
+}
+
+syscall	toggle(
+	  did32		descrp		/* Descriptor for device	*/
+	)
+{
+	intmask		mask;		/* Saved interrupt mask		*/
+	struct dentry	*devptr;	/* Entry in device switch table	*/
+	int32		retval;		/* Value to return to caller	*/
+
+	mask = disable();
+	if (isbaddev(descrp)) {
+		restore(mask);
+		return SYSERR;
+	}
+	devptr = (struct dentry *) &devtab[descrp];
+	retval = (*devptr->dvtoggle) (devptr);
+	restore(mask);
+	return retval;
+}
+
 /*------------------------------------------------------------------------
  *  init  -  Initialize a device and its driver
  *------------------------------------------------------------------------

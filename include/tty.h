@@ -10,10 +10,10 @@
 #define	Ntty		1		/* Number of serial tty lines	*/
 #endif
 #ifndef	TY_IBUFLEN
-#define	TY_IBUFLEN	128		/* Num. chars in input queue	*/
+#define	TY_IBUFLEN	32		/* Num. chars in input queue	*/
 #endif
 #ifndef	TY_OBUFLEN
-#define	TY_OBUFLEN	64		/* Num.	chars in output	queue	*/
+#define	TY_OBUFLEN	32		/* Num.	chars in output	queue	*/
 #endif
 
 /* Mode constants for input and output modes */

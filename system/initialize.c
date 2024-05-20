@@ -18,9 +18,11 @@
 
 #include <xinu.h>
 #include <gpio.h>
-//#include <syscall.h>
 #include <usb_cdc_conf.h>
-
+#include "disk.h"
+#include "fat_filelib.h"
+#include <syscall.h>
+syscall_t syscallp;
 extern	void	start(void);	/* Start of Xinu code			*/
 extern	void	*_end;		/* End of Xinu code			*/
 
@@ -48,18 +50,6 @@ pid32	currpid;		/* ID of currently executing process	*/
  
 
 
- void blink(){
-	//write(CONSOLE,"write test\n",12);
-    hw_cfg_pin(GPIOx(GPIO_C),     13,     GPIOCFG_MODE_OUT | GPIOCFG_OSPEED_VHIGH  | GPIOCFG_OTYPE_PUPD | GPIOCFG_PUPD_PUP);
-	for (;;)
-	{
-		hw_set_pin(GPIOx(GPIO_C), 13, 1);//pin_set(pin_c13);
-		sleepms(500);
-		hw_set_pin(GPIOx(GPIO_C), 13, 0);//pin_reset(pin_c13);
-		sleep(1);
-	}
-}
-
 int blink2(int nargs, char *args[])
 {
 	//resume(create(blink, 1024, 50, "blink", 0));
@@ -75,13 +65,13 @@ void blink1(){
 	int c=0;
 	int ulen;
 	char	buf[32];
-    kprintf("blink1\n");
+    printf("blink1\n");
 	resume(create(blink2, INITSTK, 60, "blink2", 3,"daniel","quintero","kernel"));
 	receive();
     
-    kprintf("\nprocess has completed.\n");
+    printf("\nprocess has completed.\n");
 	while(1){
-        kprintf("nullp %d\n",c++);
+        //printf("nullp %d\n",c++);
         sleep(3);
         /*while(!usb_available()){
               PEND_SV();
@@ -91,25 +81,38 @@ void blink1(){
         }
         buf[ulen] = SH_NEWLINE;
         kprintf("->%s\n",buf);*/
-      
 	}
-    
 }
 
+int  initFat32(){
+	uint32 size=sd_init();
+    fl_init();
+      // Attach media access functions to library
+	if (fl_attach_media(sd_readsector, sd_writesector) != FAT_INIT_OK)
+	{
+	      printf("ERROR: Failed to init file system\n");
+	      return -1;
+	}
+    printf("fat32 (%d) %d\n",512,size);
+  // List the root directory
+    fl_listdirectory("/");
+    return OK;
+}
 
 
 void nullprocess(void) {
 	//resume(create(shell, 4096/2, 50, "shell", 1, 0));
-
-	kprintf("nullprocess\n");
+	//printf("nullprocess\n");
 	//putc('D', CONSOLE);
-	//resume(create(usbTask, 1024*2, 50, "blink", 0));
 	//receive();
     //resume(create(blink1, INITSTK, 50, "blink1", 0));
-    
-    resume(create(blink, 1024, 51, "blink", 0));
-    resume(create(blink1, INITSTK, 50, "blink1", 0));
-	//resume(create(shell, 4096, 52, "shell", 1, 0));
+    //resume(create(usbTask, 1024*2, 50, "usbtask", 0));
+
+    syscallp.putc(CONSOLE,'a');
+	resume(create(shell, 1024, 52, "shell", 1, 0));
+	resume(create(initFat32, 1024, 50, "fat32", 0));
+	//resume(create(blink, 1024/2, 51, "blink", 0));
+    //resume(create(blink1, INITSTK, 50, "blink1", 0));
 	for(;;){
 
 	}

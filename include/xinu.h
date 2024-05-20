@@ -1,5 +1,6 @@
 /* xinu.h - include all system header files */
 
+#include <stdbool.h>
 #include <kernel.h>
 #include <conf.h>
 #include <process.h>
@@ -20,13 +21,13 @@
 #include <prototypes.h>
 #include <delay.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <syscall.h>
 #include <interrupt.h>
 #include <stm32.h>
+//#include <syscall.h>
+
 
 /*#include <gpio.h>
 #include <usb.h>

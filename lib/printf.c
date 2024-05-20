@@ -2,7 +2,7 @@
 
 #include <xinu.h>
 //#include <stdio.h>
-//#include <stdarg.h>
+#include <syscall.h>
 
  
 extern void _fdoprnt(char *, va_list, int (*)(did32, char), int);

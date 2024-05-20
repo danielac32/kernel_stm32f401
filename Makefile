@@ -27,7 +27,7 @@ SRCLIB         = $(wildcard lib/*.c)
 LIBOBJ         = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(notdir $(basename $(SRCLIB)))))
 SRCSHELL         = $(wildcard shell/*.c)
 SHELLOBJ         = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(notdir $(basename $(SRCSHELL)))))
-SRCDEVICE         = $(wildcard device/nam/*.c) $(wildcard device/tty/*.c)
+SRCDEVICE         = $(wildcard device/nam/*.c) $(wildcard device/tty/*.c) $(wildcard device/led/*.c) $(wildcard device/flash/*.c)
 DEVICEOBJ         = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(notdir $(basename $(SRCDEVICE)))))
 
 SRCGPIO         = $(wildcard gpio/Src/*.c)

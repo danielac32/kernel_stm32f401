@@ -80,6 +80,29 @@ extern	uint32	getticks(void);
 extern	void	halt(void);
  
 
+
+
+extern	syscall	readSector(
+	  did32		descrp,		/* Descriptor for device	*/
+	  char		*buffer,	/* Address of buffer		*/
+	  uint32	sector,
+	  uint32	count		/* Length of buffer		*/
+	);
+
+extern	syscall	writeSector(
+	  did32		descrp,		/* Descriptor for device	*/
+	  char		*buffer,	/* Address of buffer		*/
+	  uint32	sector,
+	  uint32	count		/* Length of buffer		*/
+	);
+
+extern	syscall	toggle(
+	  did32				/* Descriptor for device	*/
+	);
+extern	syscall	set(
+	  did32		,		/* Descriptor for device	*/
+	  char				/* Character to send		*/
+	);
 /* in file init.c */
 extern	syscall	init(did32);
 
@@ -239,7 +262,13 @@ extern	void	xdone(void);
 /* in file yield.c */
 extern	syscall	yield(void);
 
- 
+
+
+extern	devcall	initLED( struct dentry *);
+extern	devcall	setLED( struct dentry *, char );
+extern	devcall	toggleLED( struct dentry *);
+
+
  
 extern	devcall	ttycontrol( struct dentry *, int32, int32, int32);
 
@@ -274,3 +303,15 @@ extern	devcall	ttyread( struct dentry *, char *, int32);
 /* in file ttywrite.c */
 // extern	devcall	ttywrite(struct dentry *, char *, int32);
 extern	devcall	ttywrite( struct dentry *, char *, int32);
+
+extern	devcall	initFlash( struct dentry *devptr);
+extern	devcall	flashRead( struct dentry *devptr,char	*buff,int32,int32 );
+extern	devcall	flashWrite( struct dentry *devptr,char	*buff,int32,int32 );
+extern	devcall	flashControl(
+	   struct dentry	*devptr,	/* Entry in device switch table	*/
+	  int32	 func,			/* Function to perform		*/
+	  int32	 arg1,			/* Argument 1 for request	*/
+	  int32	 arg2			/* Argument 2 for request	*/
+	);
+
+

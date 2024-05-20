@@ -33,3 +33,6 @@ extern void delay_us(uint32_t delay_us);
 extern	intmask	disable(void);
 extern	void	enable(void);
 extern	void	restore(uint32);
+
+#define SYS_ENTRY()   asm volatile("cpsid i")
+#define SYS_EXIT()    asm volatile("cpsie i")

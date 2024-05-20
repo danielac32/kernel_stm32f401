@@ -87,7 +87,6 @@ status	addargs(
 	}
 
 	/* Argument value not found on the stack - report an error */
-
 	restore(mask);
 	return SYSERR;
 }

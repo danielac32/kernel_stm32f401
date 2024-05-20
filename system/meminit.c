@@ -193,3 +193,13 @@ char  	*getstk(
 	restore(mask);
 	return (char *)((uint32) fits + nbytes - sizeof(uint32));
 }
+
+uint32 heap_free(){
+  struct  memblk  *memptr;  /* Ptr to memory block    */
+  uint32  free_mem;   /* Total amount of free memory  */
+  free_mem = 0;
+  for (memptr = memlist.mnext; memptr != NULL; memptr = memptr->mnext) {
+       free_mem += memptr->mlength;
+  }
+  return free_mem;
+}

@@ -56,8 +56,8 @@ dloop:	b	dloop		/* Dead loop			*/
 
 
  
- .globl	syscall
-syscall:
+ .globl	__syscall
+__syscall:
 svc 0
 nop
 bx	lr
@@ -92,7 +92,7 @@ SVCall_Handler:
     push    {r0}
     bl      save_context
     pop     {r0}
-    #bl      svccall_handler
+    bl      svccall_handler
     bl      restore_context
     pop     {lr}
     bx      lr

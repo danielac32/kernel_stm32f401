@@ -14,7 +14,7 @@ void SPI_Flash_Init(void)
     SPI_FLASH_TYPE=SPI_Flash_ReadID();//读取FLASH ID.  
     flashinfo.sect_size = 512;
     flashinfo.card_size = SPI_FLASH_SECTOR_COUNT;//16000000/512
-    hw_toggle_pin(GPIOx(GPIO_C),13);
+    //hw_toggle_pin(GPIOx(GPIO_C),13);
 }  
 
 uint8_t SPI_Flash_ReadSR(void)   

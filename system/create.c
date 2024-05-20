@@ -33,6 +33,7 @@ pid32	create(
 	if (((saddr = (uint32 *)getstk(ssize)) ==
 	    (uint32 *)SYSERR ) ||
 	    (pid=newpid()) == SYSERR || priority < 1 ) {
+//		kprintf("create error %s\n",name);
 		restore(mask);
 		return SYSERR;
 	}
@@ -68,7 +69,7 @@ pid32	create(
 
    prptr->prstkptr = ((uint32) saddr);
 
-	prptr->prstkptr -= sizeof(cmcm_stack_frame_t);
+   prptr->prstkptr -= sizeof(cmcm_stack_frame_t);
    cmcm_stack_frame_t *frame = (cmcm_stack_frame_t *)proctab[pid].prstkptr;
 
    frame->hw_frame.r0 = nargs;
