@@ -99,6 +99,7 @@ int  initFat32(){
     return OK;
 }
 
+ 
 
 void nullprocess(void) {
 	//resume(create(shell, 4096/2, 50, "shell", 1, 0));
@@ -107,9 +108,11 @@ void nullprocess(void) {
 	//receive();
     //resume(create(blink1, INITSTK, 50, "blink1", 0));
     //resume(create(usbTask, 1024*2, 50, "usbtask", 0));
-
-    syscallp.putc(CONSOLE,'a');
-	resume(create(shell, 1024, 52, "shell", 1, 0));
+  syscall_init(&syscallp);
+  //syscallp.putc(CONSOLE,'a');
+  //syscallp.putc(CONSOLE,'b');
+  syscallp.puts(CONSOLE,"syscall init\n",13);
+	resume(create(shell, 2048, 52, "shell", 1, 0));
 	resume(create(initFat32, 1024, 50, "fat32", 0));
 	//resume(create(blink, 1024/2, 51, "blink", 0));
     //resume(create(blink1, INITSTK, 50, "blink1", 0));
@@ -183,12 +186,12 @@ void	nulluser()
     ready_preemptive=1;
     NVIC_EnableIRQ(TIM2_IRQn);
     asm volatile ("mov r0, %0\n" : : "r" (prptr->prstkptr));
-	asm volatile ("msr psp, r0");
-	asm volatile ("ldmia r0!, {r4-r11} ");
+	  asm volatile ("msr psp, r0");
+	  asm volatile ("ldmia r0!, {r4-r11} ");
     asm volatile ("msr psp, r0");
-	asm volatile ("mov r0, #2");
-	asm volatile ("msr control, r0");
-	asm volatile ("isb");
+	  asm volatile ("mov r0, #2");
+	  asm volatile ("msr control, r0");
+	  asm volatile ("isb");
     nullprocess();
 
 	for(;;);

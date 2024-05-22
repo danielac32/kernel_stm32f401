@@ -60,23 +60,25 @@ pid32	create(
 	prptr->prdesc[2] = CONSOLE;	/* stderr is CONSOLE device	*/
 
 
-	/* Initialize stack as if the process was called		*/
+	uint32 * tmpstk;
+	uint32 * extraregs;
 	a = (uint32 *)(&nargs + 1);
+	tmpstk = ((uint32) saddr) - 0x1C;
+	extraregs = ((uint32) tmpstk) - 0x20; /* r4 - r11 */
 
 	for (int i = 0; i < nargs; i++) {
-		prptr->parg[i] = (uint32) *a++;
+		tmpstk[i] = (uint32) *a++;
 	}
 
-   prptr->prstkptr = ((uint32) saddr);
+	tmpstk[5] = (uint32) userret;	/* LR */
+	tmpstk[6] = (uint32) procaddr; /* Function */
+	tmpstk[7] = (uint32) 0x01000000; /* Flag register */
 
-   prptr->prstkptr -= sizeof(cmcm_stack_frame_t);
-   cmcm_stack_frame_t *frame = (cmcm_stack_frame_t *)proctab[pid].prstkptr;
-
-   frame->hw_frame.r0 = nargs;
-   frame->hw_frame.r1 = &prptr->parg[0];
-   frame->hw_frame.lr = userret;
-   frame->hw_frame.pc = procaddr;
-   frame->hw_frame.psr = 0x01000000; // default PSR value
+	
+	for (int i = 0; i <= 7; i++) {
+		extraregs[i] = 0x0; /* Initialize to zero */
+	}
+	prptr->prstkptr = extraregs;
    
 	#if 0
 	uint32 * tmpstk;

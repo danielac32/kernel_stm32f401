@@ -47,3 +47,5 @@ extern void    hexdump2(
      uint32 offset,
      bool  canon           /* Print in ASCII or hex    */
     );
+
+extern void hexDump2(uint32 offset, void *addr, int len) ;

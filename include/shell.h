@@ -76,4 +76,10 @@ extern	uint32	ncmd;
 extern	const	struct	cmdent	cmdtab[];
 
 
- 
+
+typedef char buf_t[128];
+buf_t path, curdir;
+
+extern void update_path();
+extern char* full_path(const char* name);
+extern buf_t path, curdir;

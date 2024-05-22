@@ -1,18 +1,18 @@
 #include <interrupt.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stm32.h>
+//#include <stdint.h>
+//#include <stdio.h>
+//#include <stdbool.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <stm32.h>
 #include <usb_cdc_conf.h>
-#include <memory.h>
-#include <kernel.h>
-#include <process.h>
+//#include <memory.h>
+//#include <kernel.h>
+//#include <process.h>
 #include <syscall.h>
 #include <elf.h>
 #include <gpio.h>
- 
+#include <xinu.h> 
 
 
 void *SVC_XINU_NULLPROCESS(uint32 *sp){
@@ -20,14 +20,16 @@ void *SVC_XINU_NULLPROCESS(uint32 *sp){
     return sp; 
 }
 void *SVC_XINU_PUTC (uint32 *sp){
-    while(usbd_ep_write(&udev, CDC_TXD_EP, &sp[1], 1)==-1);
+    //while(usbd_ep_write(&udev, CDC_TXD_EP, &sp[2], 1)==-1);
+    putc(sp[1],sp[2]);
     return sp;  
 }
 void *SVC_XINU_PUTS (uint32 *sp){
-    char *str = (char *)sp[1];
-    int size = sp[2];
+    //char *str = (char *)sp[1];
+    //int size = sp[2];
 
-    while(usbd_ep_write(&udev, CDC_TXD_EP, str, size)==-1);
+    //while(usbd_ep_write(&udev, CDC_TXD_EP, str, size)==-1);
+    write(sp[1],sp[2],sp[3]);
     return sp;  
 }
 void *SVC_XINU_GETC(uint32 *sp){
@@ -69,7 +71,7 @@ void *SVC_XINU_READY (uint32 *sp){
     return sp;  
 }
 void *SVC_XINU_SLEEP (uint32 *sp){
- 
+    sleepms(sp[1]);
 return sp;  
 }
 void *SVC_XINU_FREE (uint32 *sp){

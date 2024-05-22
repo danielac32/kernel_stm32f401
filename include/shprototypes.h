@@ -1,6 +1,6 @@
 //extern shellcmd xsh_rdstest(int nargs, char *args[]);
 
-extern shellcmd xsh_elf2(int nargs, char *args[]);
+extern shellcmd xsh_format(int nargs, char *args[]);
 extern shellcmd xsh_elf(int nargs, char *args[]);
 extern shellcmd xsh_vm(int nargs, char *args[]);
 extern shellcmd xsh_test(int nargs, char *args[]);
@@ -79,5 +79,5 @@ extern	shellcmd  xsh_cat	(int32, char *[]);
 extern	shellcmd  xsh_cp	(int32, char *[]);
 extern	shellcmd  xsh_mv	(int32, char *[]);
 extern	shellcmd  xsh_reboot	(int32, char *[]);
-extern	shellcmd  xsh_mkfs	(int32, char *[]);
+extern	shellcmd  xsh_run	(int32, char *[]);
 

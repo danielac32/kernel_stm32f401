@@ -3,7 +3,40 @@
 #include <xinu.h>
 #include <string.h>
 #include "shprototypes.h"
- 
+
+
+
+
+void update_path(){
+	strcpy(path, curdir);
+}
+
+char* full_path(const char* name) {
+    if (name == NULL)
+        return NULL;
+    if (name[0] == '/') {
+        strcpy(path, name);
+        return path;
+    }
+    if (strncmp(name, "./", 2) == 0)
+        name += 2;
+    strcpy(path, curdir);
+    if (strncmp(name, "../", 3) != 0) {
+        if (name[0])
+            strcat(path, name);
+    } else {
+        name += 3; // root doen't have a parent
+        char* cp = strrchr(path, '/');
+        if (cp != NULL)
+            *cp = 0;
+        cp = strrchr(path, '/');
+        if (cp != NULL)
+            *(cp + 1) = 0;
+        strcat(path, name);
+    }
+    return path;
+}
+
 
 /************************************************************************/
 /* Table of Xinu shell commands and the function associated with each	*/
@@ -11,7 +44,7 @@
 const	struct	cmdent	cmdtab[] = {
 	{"reboot",	FALSE,	xsh_reboot},
 	{"devdump",	FALSE,	xsh_devdump},
-	{"echo",	FALSE,	xsh_echo},
+	{"echo",	TRUE,	xsh_echo},
 	{"exit",	TRUE,	xsh_exit},
 	{"help",	FALSE,	xsh_help},
 	{"kill",	TRUE,	xsh_kill},
@@ -19,7 +52,18 @@ const	struct	cmdent	cmdtab[] = {
 	{"memstat",	TRUE,	xsh_memstat}, /* Make built-in */
 	{"ps",		FALSE,	xsh_ps},
 	{"?",		FALSE,	xsh_help},
-	{"blink",   FALSE,  xsh_blink}
+	{"blink",   FALSE,  xsh_blink},
+	{"cd",      TRUE,   xsh_cd},
+	{"ls",      TRUE,   xsh_ls},
+	{"cat",     FALSE,  xsh_cat},
+	{"dump",    FALSE,  xsh_dump},
+	{"mkdir",   TRUE,   xsh_mkdir},
+	{"pwd",     TRUE,   xsh_pwd},
+	{"rm",      TRUE,   xsh_rm},
+	{"touch",   TRUE,   xsh_touch},
+	{"run",     FALSE,  xsh_run},
+    {"format",  FALSE,  xsh_format},
+	{"test",    FALSE,  xsh_test},
 
 };
 
@@ -81,7 +125,9 @@ process	shell (
     //strcpy(path,"/");
     
    //strcpy(cwd,"/");
-
+   strcpy(path, "/");
+    strcpy(curdir, path);
+    
 did32	dev=CONSOLE;
 	/* Print shell banner and startup message */
 
@@ -94,8 +140,8 @@ did32	dev=CONSOLE;
 	/* Continually prompt the user, read input, and execute command	*/
   
   
-	struct dentry	*devptr;	
-	struct	ttycblk	*typtr;	
+	//struct dentry	*devptr;	
+	//struct	ttycblk	*typtr;	
 	struct	procent	*prptr;
 	while (TRUE) {
 
@@ -148,47 +194,7 @@ did32	dev=CONSOLE;
 		}
 
 
-		/* Check for input/output redirection (default is none) */
-
-		outname = inname = NULL;
-		if ( (ntok >=3) && ( (toktyp[ntok-2] == SH_TOK_LESS)
-				   ||(toktyp[ntok-2] == SH_TOK_GREATER))){
-			if (toktyp[ntok-1] != SH_TOK_OTHER) {
-				fprintf(dev,"%s\n", SHELL_SYNERRMSG);
-				continue;
-			}
-			if (toktyp[ntok-2] == SH_TOK_LESS) {
-				inname =  &tokbuf[tok[ntok-1]];
-			} else {
-				outname = &tokbuf[tok[ntok-1]];
-			}
-			ntok -= 2;
-			tlen = tok[ntok];
-		}
-
-
-		if ( (ntok >=3) && ( (toktyp[ntok-2] == SH_TOK_LESS)
-				   ||(toktyp[ntok-2] == SH_TOK_GREATER))){
-			if (toktyp[ntok-1] != SH_TOK_OTHER) {
-				fprintf(dev,"%s\n", SHELL_SYNERRMSG);
-				continue;
-			}
-			if (toktyp[ntok-2] == SH_TOK_LESS) {
-				if (inname != NULL) {
-				    fprintf(dev,"%s\n", SHELL_SYNERRMSG);
-				    continue;
-				}
-				inname = &tokbuf[tok[ntok-1]];
-			} else {
-				if (outname != NULL) {
-				    fprintf(dev,"%s\n", SHELL_SYNERRMSG);
-				    continue;
-				}
-				outname = &tokbuf[tok[ntok-1]];
-			}
-			ntok -= 2;
-			tlen = tok[ntok];
-		}
+		 
 
 		/* Verify remaining tokens are type "other" */
 
@@ -233,9 +239,9 @@ did32	dev=CONSOLE;
 		}
 
 		/* Handle built-in command */
-
+ 
 		if (cmdtab[j].cbuiltin) { /* No background or redirect. */
-			if (inname != NULL || outname != NULL || backgnd){
+			if (backgnd){
 				fprintf(dev, SHELL_BGERRMSG);
 				continue;
 			} else {
@@ -254,48 +260,22 @@ did32	dev=CONSOLE;
 			}
 			continue;
 		}
-		/* Open files and redirect I/O if specified */
-
-		/*if (inname != NULL) {
-			stdinput = open(NAMESPACE,inname,"ro");
-			if (stdinput == SYSERR) {
-				fprintf(dev, SHELL_INERRMSG, inname);
-				continue;
-			}
-		}
-		if (outname != NULL) {
-			stdoutput = open(NAMESPACE,outname,"w");
-			if (stdoutput == SYSERR) {
-				fprintf(dev, SHELL_OUTERRMSG, outname);
-				continue;
-			} else {
-				control(stdoutput, F_CTL_TRUNC, 0, 0);
-			}
-		}*/
-
+ 
+		 
 		/* Spawn child thread for non-built-in commands */
 
 		child = create(cmdtab[j].cfunc,
 			SHELL_CMDSTK, SHELL_CMDPRIO,
-			cmdtab[j].cname, 0);
+			cmdtab[j].cname, 2, ntok, &tmparg);
 
 		/* If creation or argument copy fails, report error */
 
-		if (child == SYSERR){
+		if ((child == SYSERR) ||
+		    (addargs(child, ntok, tok, tlen, tokbuf, &tmparg)
+							== SYSERR) ) {
 			fprintf(dev, SHELL_CREATMSG);
 			continue;
 		}
-
-		prptr = &proctab[child];
-		context_t *ctx = (context_t*)prptr->prstkptr;
-		ctx->r0 = (uint32) ntok;
-        ctx->r1 = (uint32)&args[0];
-		//if ((*cmdtab[j].cfunc)(ntok, args)
-		//if ((child == SYSERR) || (addargs(child, ntok, tok, tlen, tokbuf, &tmparg) == SYSERR) ) {
-		//	fprintf(dev, SHELL_CREATMSG);
-		//	continue;
-		//}
-
 		/* Set stdinput and stdoutput in child to redirect I/O */
 
 		proctab[child].prdesc[0] = stdinput;

@@ -50,7 +50,7 @@ int printf(
     va_list ap;
 
     va_start(ap, fmt);
-    _fdoprnt((char *)fmt, ap, putc, stdout);
+    _fdoprnt((char *)fmt, ap, syscallp.putc, stdout);
     va_end(ap);
 
     return 0;

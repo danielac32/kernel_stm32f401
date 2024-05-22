@@ -118,7 +118,7 @@ typedef struct syscall_s
     //int (*create)(void *procaddr, uint32 ssize, int priority,const char *name, int nargs, ...);
     void (*reset)();//SYSCON = 0x5555; 
     void (*putc)(int ,char );
-    void (*puts)(char *);
+    void (*puts)(int ,char *,int);
     int (*kbhit)();
     int (*readbyte)();
     char *(*full_path)(char *);

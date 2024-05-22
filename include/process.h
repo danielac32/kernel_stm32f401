@@ -56,7 +56,7 @@ typedef struct {
 
 /* Miscellaneous process definitions */
 
-#define	PNMLEN		16	/* Length of process "name"		*/
+#define	PNMLEN		20	/* Length of process "name"		*/
 #define	NULLPROC	0	/* ID of the null process		*/
 
 /* Process initialization constants */
@@ -91,6 +91,7 @@ struct procent {		/* Entry in the process table		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
   bool8 	elf;
   void *img;
+  //char parg[5][16];//
   void *parg[MAX_ARG]; 
 };
 

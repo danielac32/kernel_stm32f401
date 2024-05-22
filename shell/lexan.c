@@ -83,12 +83,12 @@ int32	lexan (
 					p++;
 					continue;
 
-		    case SH_GREATER:	toktyp[ntok] = SH_TOK_GREATER;
+		    /*case SH_GREATER:	toktyp[ntok] = SH_TOK_GREATER;
 					tokbuf[tbindex++] = ch;
 					tokbuf[tbindex++] = NULLCH;
 					ntok++;
 					p++;
-					continue;
+					continue;*/
 
 		    default:		toktyp[ntok] = SH_TOK_OTHER;
 		};

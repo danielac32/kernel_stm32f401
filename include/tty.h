@@ -1,8 +1,8 @@
 /* tty.h */
 
-#define	TY_OBMINSP	20		/* Min space in buffer before	*/
+#define	TY_OBMINSP	32		/* Min space in buffer before	*/
 					/*   processes awakened to write*/
-#define	TY_EBUFLEN	20		/* Size of echo queue		*/
+#define	TY_EBUFLEN	32		/* Size of echo queue		*/
 
 /* Size constants */
 
