@@ -4,7 +4,7 @@
 #include <string.h>
 #include "shprototypes.h"
 
-
+buf_t path, curdir;
 
 
 void update_path(){
